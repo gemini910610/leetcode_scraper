@@ -15,8 +15,7 @@ class User:
         '''
         data = {
             'query': query,
-            'variables': variables,
-            'operation': 'scrape'
+            'variables': variables
         }
         response = requests.post(self.url, json=data)
         return response.json()['data']
@@ -46,8 +45,10 @@ class User:
             profile
             {
                 ranking
+                starRating
                 userAvatar
                 realName
+                birthday
                 aboutMe
                 school
                 websites
@@ -160,6 +161,18 @@ class User:
         '''
         data = self.__matched_user(query, username=self.username)
         return data['upcomingBadges']
+    def active_badge(self):
+        query = '''
+            activeBadge
+            {
+                id
+                displayName
+                icon
+                creationDate
+            }
+        '''
+        data = self.__matched_user(query, username=self.username)
+        return data['activeBadge']
     def user_calendar(self, year=None):
         query = '''
             userCalendar(year: $year)
@@ -176,6 +189,7 @@ class User:
                         icon
                     }
                 }
+                submissionCalendar
             }
         '''
         data = self.__matched_user(
@@ -207,16 +221,6 @@ class User:
         '''
         data = self.__matched_user(query, username=self.username)
         return data
-    def all_questions_count(self):
-        query = '''
-            allQuestionsCount
-            {
-                difficulty
-                count
-            }
-        '''
-        data = self.__scrape(query, '')
-        return data['allQuestionsCount']
     def user_contest_ranking(self):
         query = '''
             userContestRanking(username: $username)
@@ -279,6 +283,19 @@ class User:
         '''
         data = self.__scrape(query, username=self.username)
         return data['userProfileUserQuestionProgressV2']
+    def recent_submission_list(self, limit=15):
+        query = '''
+            recentSubmissionList(username: $username, limit: $limit)
+            {
+                title
+                titleSlug
+                timestamp
+                statusDisplay
+                lang
+            }
+        '''
+        data = self.__scrape(query, '($username: String!, $limit: Int)', username=self.username, limit=limit)
+        return data['recentSubmissionList']
     def recent_AC_submission_list(self, limit=15):
         query = '''
             recentAcSubmissionList(username: $username, limit: $limit)
@@ -287,6 +304,7 @@ class User:
                 title
                 titleSlug
                 timestamp
+                lang
             }
         '''
         data = self.__scrape(
