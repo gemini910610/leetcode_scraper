@@ -1,1 +1,1 @@
-from .leetcode import LeetCode
+from .user import User

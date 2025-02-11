@@ -1,6 +1,6 @@
 import requests
 
-class LeetCode:
+class User:
     def __init__(self, username):
         self.username = username
         self.url = 'https://leetcode.com/graphql/'
