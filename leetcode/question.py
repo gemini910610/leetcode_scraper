@@ -1,23 +1,8 @@
-import requests
+from .leetcode import LeetCode
 
 class Question:
     def __init__(self):
-        self.url = 'https://leetcode.com/graphql/'
-    def __scrape(self, query, params=None, **variables):
-        if params is None:
-            params = ''
-        query = f'''
-            query scrape{params}
-            {{
-                {query}
-            }}
-        '''
-        data = {
-            'query': query,
-            'variables': variables
-        }
-        response = requests.post(self.url, json=data)
-        return response.json()['data']
+        self.leetcode = LeetCode()
     def all_questions_count(self):
         query = '''
             allQuestionsCount
@@ -26,8 +11,9 @@ class Question:
                 count
             }
         '''
-        data = self.__scrape(query)
-        return data['allQuestionsCount']
+        response = self.leetcode.scrape(query)
+        self.leetcode.check_response(response, 'allQuestionsCount')
+        return response['allQuestionsCount']
     def question(self, titleSlug):
         query = '''
             question(titleSlug: $titleSlug)
@@ -140,8 +126,9 @@ class Question:
                 note
             }
         '''
-        data = self.__scrape(query, '($titleSlug: String!)', titleSlug=titleSlug)
-        return data['question']
+        response = self.leetcode.scrape(query, '($titleSlug: String!)', titleSlug=titleSlug)
+        self.leetcode.check_response(response, 'question')
+        return response['question']
     def active_daily_coding_challenge_question(self):
         query = '''
             activeDailyCodingChallengeQuestion
@@ -226,8 +213,9 @@ class Question:
                 }
             }
         '''
-        data = self.__scrape(query)
-        return data['activeDailyCodingChallengeQuestion']
+        response = self.leetcode.scrape(query)
+        self.leetcode.check_response(response, 'activeDailyCodingChallengeQuestion')
+        return response['activeDailyCodingChallengeQuestion']
     def daily_coding_challenge(self, year, month):
         query = '''
             dailyCodingChallengeV2(year: $year, month: $month)
@@ -246,8 +234,9 @@ class Question:
                 }
             }
         '''
-        data = self.__scrape(query, '($year: Int!, $month: Int!)', year=year, month=month)
-        return data['dailyCodingChallengeV2']
+        response = self.leetcode.scrape(query, '($year: Int!, $month: Int!)', year=year, month=month)
+        self.leetcode.check_response(response, 'dailyCodingChallengeV2')
+        return response['dailyCodingChallengeV2']
     def daily_challenge_medal(self, year, month):
         query = '''
             dailyChallengeMedal(year: $year, month: $month)
@@ -259,8 +248,9 @@ class Question:
                 }
             }
         '''
-        data = self.__scrape(query, '($year: Int!, $month: Int!)', year=year, month=month)
-        return data['dailyChallengeMedal']
+        response = self.leetcode.scrape(query, '($year: Int!, $month: Int!)', year=year, month=month)
+        self.leetcode.check_response(response, 'dailyChallengeMedal')
+        return response['dailyChallengeMedal']
     def question_list(self, categorySlug='all-code-essentials', limit=50, skip=0, filters=None):
         if filters is None:
             filters = {}
@@ -298,5 +288,6 @@ class Question:
                 }
             }
         '''
-        data = self.__scrape(query, '($categorySlug: String, $limit: Int, $skip: Int, $filters: QuestionListFilterInput)', categorySlug=categorySlug, limit=limit, skip=skip, filters=filters)
-        return data['questionList']
+        response = self.leetcode.scrape(query, '($categorySlug: String, $limit: Int, $skip: Int, $filters: QuestionListFilterInput)', categorySlug=categorySlug, limit=limit, skip=skip, filters=filters)
+        self.leetcode.check_response(response, 'questionList')
+        return response['questionList']

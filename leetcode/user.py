@@ -1,33 +1,9 @@
-import requests
+from .leetcode import LeetCode
 
 class User:
     def __init__(self, username):
         self.username = username
-        self.url = 'https://leetcode.com/graphql/'
-    def __scrape(self, query, params=None, **variables):
-        if params is None:
-            params = '($username: String!)'
-        query = f'''
-            query scrape{params}
-            {{
-                {query}
-            }}
-        '''
-        data = {
-            'query': query,
-            'variables': variables
-        }
-        response = requests.post(self.url, json=data)
-        return response.json()['data']
-    def __matched_user(self, query, params=None, **variables):
-        query = f'''
-            matchedUser(username: $username)
-            {{
-                {query}
-            }}
-        '''
-        data = self.__scrape(query, params, **variables)
-        return data['matchedUser']
+        self.leetcode = LeetCode()
     def contest_badge(self):
         query = '''
             contestBadge
@@ -38,8 +14,9 @@ class User:
                 icon
             }
         '''
-        data = self.__matched_user(query, username=self.username)
-        return data['contestBadge']
+        response = self.leetcode.matched_user(query, username=self.username)
+        self.leetcode.check_response(response, 'contestBadge')
+        return response['contestBadge']
     def profile(self):
         query = '''
             profile
@@ -67,8 +44,9 @@ class User:
                 certificationLevel
             }
         '''
-        data = self.__matched_user(query, username=self.username)
-        return data['profile']
+        response = self.leetcode.matched_user(query, username=self.username)
+        self.leetcode.check_response(response, 'profile')
+        return response['profile']
     def language_problem_count(self):
         query = '''
             languageProblemCount
@@ -77,8 +55,9 @@ class User:
                 problemsSolved
             }
         '''
-        data = self.__matched_user(query, username=self.username)
-        return data['languageProblemCount']
+        response = self.leetcode.matched_user(query, username=self.username)
+        self.leetcode.check_response(response, 'languageProblemCount')
+        return response['languageProblemCount']
     def tag_problem_counts(self):
         query = '''
             tagProblemCounts
@@ -103,8 +82,9 @@ class User:
                 }
             }
         '''
-        data = self.__matched_user(query, username=self.username)
-        return data['tagProblemCounts']
+        response = self.leetcode.matched_user(query, username=self.username)
+        self.leetcode.check_response(response, 'tagProblemCounts')
+        return response['tagProblemCounts']
     def submit_stats(self):
         query = '''
             submitStats
@@ -123,8 +103,9 @@ class User:
                 }
             }
         '''
-        data = self.__matched_user(query, username=self.username)
-        return data['submitStats']
+        response = self.leetcode.matched_user(query, username=self.username)
+        self.leetcode.check_response(response, 'submitStats')
+        return response['submitStats']
     def badges(self):
         query = '''
             badges
@@ -148,8 +129,9 @@ class User:
                 }
             }
         '''
-        data = self.__matched_user(query, username=self.username)
-        return data['badges']
+        response = self.leetcode.matched_user(query, username=self.username)
+        self.leetcode.check_response(response, 'badges')
+        return response['badges']
     def upcoming_badges(self):
         query = '''
             upcomingBadges
@@ -159,8 +141,9 @@ class User:
                 progress
             }
         '''
-        data = self.__matched_user(query, username=self.username)
-        return data['upcomingBadges']
+        response = self.leetcode.matched_user(query, username=self.username)
+        self.leetcode.check_response(response, 'upcomingBadges')
+        return response['upcomingBadges']
     def active_badge(self):
         query = '''
             activeBadge
@@ -171,8 +154,9 @@ class User:
                 creationDate
             }
         '''
-        data = self.__matched_user(query, username=self.username)
-        return data['activeBadge']
+        response = self.leetcode.matched_user(query, username=self.username)
+        self.leetcode.check_response(response, 'activeBadge')
+        return response['activeBadge']
     def user_calendar(self, year=None):
         query = '''
             userCalendar(year: $year)
@@ -192,35 +176,23 @@ class User:
                 submissionCalendar
             }
         '''
-        data = self.__matched_user(
-            query,
-            '($username: String!, $year: Int)',
-            username=self.username,
-            year=year
-        )
-        return data['userCalendar']
+        response = self.leetcode.matched_user(query, '($username: String!, $year: Int)', username=self.username, year=year)
+        self.leetcode.check_response(response, 'userCalendar')
+        return response['userCalendar']
     def submission_calendar(self):
         query = 'submissionCalendar'
-        data = self.__matched_user(query, username=self.username)
-        return data['submissionCalendar']
-    def active_badge(self):
-        query = '''
-            activeBadge
-            {
-                displayName
-                icon
-            }
-        '''
-        data = self.__matched_user(query, username=self.username)
-        return data['activeBadge']
+        response = self.leetcode.matched_user(query, username=self.username)
+        self.leetcode.check_response(response, 'submissionCalendar')
+        return response['submissionCalendar']
     def user_url(self):
         query = '''
             githubUrl
             twitterUrl
             linkedinUrl
         '''
-        data = self.__matched_user(query, username=self.username)
-        return data
+        response = self.leetcode.matched_user(query, username=self.username)
+        self.leetcode.check_response(response)
+        return response
     def user_contest_ranking(self):
         query = '''
             userContestRanking(username: $username)
@@ -236,8 +208,9 @@ class User:
                 }
             }
         '''
-        data = self.__scrape(query, username=self.username)
-        return data['userContestRanking']
+        response = self.leetcode.scrape(query, '($username: String!)', username=self.username)
+        self.leetcode.check_response(response, 'userContestRanking')
+        return response['userContestRanking']
     def user_contest_ranking_history(self):
         query = '''
             userContestRankingHistory(username: $username)
@@ -256,8 +229,9 @@ class User:
                 }
             }
         '''
-        data = self.__scrape(query, username=self.username)
-        return data['userContestRankingHistory']
+        response = self.leetcode.scrape(query, '($username: String!)', username=self.username)
+        self.leetcode.check_response(response, 'userContestRankingHistory')
+        return response['userContestRankingHistory']
     def user_profile_user_question_progress(self):
         query = '''
             userProfileUserQuestionProgressV2(userSlug: $username)
@@ -281,8 +255,9 @@ class User:
                 }
             }
         '''
-        data = self.__scrape(query, username=self.username)
-        return data['userProfileUserQuestionProgressV2']
+        response = self.leetcode.scrape(query, '($username: String!)', username=self.username)
+        self.leetcode.check_response(response, 'userProfileUserQuestionProgressV2')
+        return response['userProfileUserQuestionProgressV2']
     def recent_submission_list(self, limit=15):
         query = '''
             recentSubmissionList(username: $username, limit: $limit)
@@ -294,8 +269,9 @@ class User:
                 lang
             }
         '''
-        data = self.__scrape(query, '($username: String!, $limit: Int)', username=self.username, limit=limit)
-        return data['recentSubmissionList']
+        response = self.leetcode.scrape(query, '($username: String!, $limit: Int)', username=self.username, limit=limit)
+        self.leetcode.check_response(response, 'recentSubmissionList')
+        return response['recentSubmissionList']
     def recent_AC_submission_list(self, limit=15):
         query = '''
             recentAcSubmissionList(username: $username, limit: $limit)
@@ -307,13 +283,9 @@ class User:
                 lang
             }
         '''
-        data = self.__scrape(
-            query,
-            '($username: String!, $limit: Int!)',
-            username=self.username,
-            limit=limit
-        )
-        return data['recentAcSubmissionList']
+        response = self.leetcode.scrape(query, '($username: String!, $limit: Int!)', username=self.username, limit=limit)
+        self.leetcode.check_response(response, 'recentAcSubmissionList')
+        return response['recentAcSubmissionList']
     def created_public_favorite_list(self):
         query = '''
             createdPublicFavoriteList(userSlug: $username)
@@ -337,9 +309,11 @@ class User:
                 }
             }
         '''
-        data = self.__scrape(query, username=self.username)
-        return data['createdPublicFavoriteList']
+        response = self.leetcode.scrape(query, '($username: String!)', username=self.username)
+        self.leetcode.check_response(response, 'createdPublicFavoriteList')
+        return response['createdPublicFavoriteList']
     def can_see_other_submission_history(self):
         query = 'canSeeOtherSubmissionHistory(userSlug: $username)'
-        data = self.__scrape(query, username=self.username)
-        return data['canSeeOtherSubmissionHistory']
+        response = self.leetcode.scrape(query, '($username: String!)', username=self.username)
+        self.leetcode.check_response(response, 'canSeeOtherSubmissionHistory')
+        return response['canSeeOtherSubmissionHistory']
